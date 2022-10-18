@@ -1,91 +1,169 @@
-import java.util.Date;
+import java.util.Scanner;
 
 public class Main {
+    static int[][] ticTacToeArray = {
+            {-9,-9,-9},
+            {-9,-9,-9},
+            {-9,-9,-9}
+    };
+
     public static void main(String[] args) {
-        String name = "Nikita ";
-        String surname = "Ksenofontov";
-
-        String result1 = (name + surname).intern();
-
-        String result2 = "Nikita Ksenofontov";
-
-
-        //        String name2 = new String("Nikita");
-
-
-        // == по умолчанию сравнивает ссылки на объекты
-        System.out.println(result1 == result2);
-
-
-
-
-        StringBuilder stringBuilder = new StringBuilder(); //не потоко безопасный
-//        StringBuffer stringBuffer = new StringBuffer();  потокобезопасный
-
-//        String surname = "Ksenofontov    qwewqeqweqwe";
-//        System.out.println(surname.toCharArray());
-
-        System.out.println(new Date());
-        System.out.println(stringBuilder.toString());
-//        String result = "";
-        for (int i = 0; i < 1000000; i++) {
-            //stringBuilder.append("Bar");
-//            result += "Bar";
+        while (true){
+            printArray(ticTacToeArray);
+            setCellPerson(ticTacToeArray);
+            if (checkWinsV2(ticTacToeArray)){
+                printArray(ticTacToeArray);
+                break;
+            }
+            setCellComputer(ticTacToeArray);
+            if (checkWinsV2(ticTacToeArray)){
+                printArray(ticTacToeArray);
+                break;
+            }
         }
-        System.out.println(stringBuilder);
-        System.out.println(new Date());
-
-
-
-         StringBuilder result = stringBuilder
-                .deleteCharAt(0);
-//                .insert(3,"Vakulenchuka")
-//                .substring(5);
-
-//                .append("Vakelenchuka ")
-//                .append("City Drnipro")
-//                .reverse();
-
-//        System.out.println(result);
-
-
-
-//        for (int i = 0; i < surname.length(); i++) {
-//            char c = surname.toCharArray()[i];
-//        }
-
-
-
-
-        /*    char c = '\u2660';
-    String c2 = "\u2665\u2660";
-    String someText = "\u041e\u0434\u0440\u0438\u043d";
-    System.out.println(c2);*/
-
-        //        int[] numbers = {2, 11, 3, 0, 13,};
-//        int[] numbersSecond = {10, 24, 3, 0, 50,};
-//
-//        int[] result = new int[numbers.length];
-//
-//        int counter = 0;
-//        for (int i = 0; i < numbers.length; i++) {
-//            if (numbers[i] == numbersSecond[i]) {
-//                int temp = numbersSecond[i];
-//                result[counter] = temp;
-//                counter++;
-//            }
-//        }
-//
-//        int[] resultSecond = new int[counter];
-//        for (int i = 0; i < resultSecond.length; i++) {
-//            resultSecond[i] = result[i];
-//            System.out.println(resultSecond[i]);
-//        }
-//    }
     }
+
+    public static boolean checkWinsV2(int[][] array){
+        return (array[0][0] != -9 && array[0][1] == array[0][0]  && array[0][2] ==array[0][0] )||
+                (array[1][0] != -9 && array[1][1] == array[1][0] && array[1][2] ==array[1][0]) ||
+                (array[2][0] != -9 && array[2][1] == array[2][0] && array[2][2] ==array[2][0]) ||
+                (array[0][0] != -9 && array[1][0] == array[0][0] && array[2][0] ==array[0][0]) ||
+                (array[0][1] != -9 && array[1][1] == array[0][1] && array[2][1] ==array[0][1]) ||
+                (array[0][2] != -9 && array[1][2] == array[0][2] && array[2][2] ==array[0][2]) ||
+                (array[0][0] != -9 && array[1][1] == array[0][0] && array[2][2] ==array[0][0]) ||
+                (array[0][2] != -9 && array[1][1] == array[0][2] && array[2][0] ==array[0][2]);
+    }
+
+    static boolean checkWins(int[][] array){
+        boolean result = false;
+        int counter = 0;
+        int reverseCounter = 0;
+        int diagonalMainCounter = 0 ;
+        int diagonalReverseCounter = 0;
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                counter += array[i][j];
+                reverseCounter += array[j][i];
+                /*
+                {-9,-9,-9},
+                {-9,-9,-9},
+                {-9,-9,-9}
+                 */
+                if (i == j){
+                    diagonalMainCounter += array[i][j];
+                }
+                if (i + j == 2) {
+                    diagonalReverseCounter += array[i][j];
+                }
+            }
+            if (counter == 0 || reverseCounter == 0 || diagonalMainCounter == 0 || diagonalReverseCounter == 0) {
+                System.out.println("Computer wins");
+                result = true;
+                break;
+            } else if (counter == 3 || reverseCounter == 3 || diagonalMainCounter == 3 || diagonalReverseCounter == 3) {
+                System.out.println("User wins");
+                result = true;
+                break;
+            } else {
+                counter = 0;
+                reverseCounter = 0;
+//                diagonalMainCounter = 0 ;
+//                diagonalReverseCounter = 0;
+            }
+        }
+        return result;
+    }
+
+    public static void setCellPerson(int[][] array){
+        System.out.println("Please enter digit from 1 to 9");
+        Scanner scanner = new Scanner(System.in);
+        int cell;
+        while(true){
+            if (scanner.hasNextInt()){
+                cell = scanner.nextInt();
+                if (checkEmptyCell(array,cell) && cell > 0 && cell < 10){
+                    fillCellPerson(array,1,cell);
+                    break;
+                } else {
+                    System.out.println("Wrong data! Please enter digit from 1 to 9");
+                }
+            }else {
+                System.out.println("Wrong data! Please enter digit from 1 to 9");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    public static void setCellComputer(int[][] array){
+        while (true){
+            int cell = (int) (Math.random() * 9) + 1;
+            if (checkEmptyCell(array,cell)){
+                fillCellPerson(array,0,cell);
+                break;
+            }
+        }
+    }
+
+    public static boolean checkEmptyCell(int[][] array, int cell){
+        if (cell == 1 && array[0][0] == -9) return true;
+        else if (cell == 2 && array[0][1] == -9) return true;
+        else if (cell == 3 && array[0][2] == -9) return true;
+        else if (cell == 4 && array[1][0] == -9) return true;
+        else if (cell == 5 && array[1][1] == -9) return true;
+        else if (cell == 6 && array[1][2] == -9) return true;
+        else if (cell == 7 && array[2][0] == -9) return true;
+        else if (cell == 8 && array[2][1] == -9) return true;
+        else return  (cell == 9 && array[2][2] == -9);
+    }
+
+    public static void fillCellPerson(int[][] array, int k,int cell){
+        switch (cell){
+            case 1:
+                array[0][0] = k;
+                break;
+            case 2:
+                array[0][1] = k;
+                break;
+            case 3:
+                array[0][2] = k;
+                break;
+            case 4:
+                array[1][0] = k;
+                break;
+            case 5:
+                array[1][1] = k;
+                break;
+            case 6:
+                array[1][2] = k;
+                break;
+            case 7:
+                array[2][0] = k;
+                break;
+            case 8:
+                array[2][1] = k;
+                break;
+            case 9:
+                array[2][2] = k;
+                break;
+        }
+    }
+
+
+    public static void printArray(int[][] array){
+        System.out.println();
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                if (array[i][j] == 0){
+                    System.out.print("0\t");
+                }else if(array[i][j] == 1){
+                    System.out.print("X\t");
+                }else{
+                    System.out.print("*\t");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
 }
-
-
-
-
-
